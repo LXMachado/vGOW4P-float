@@ -1,12 +1,20 @@
 import { Api } from '@/core/trpc'
 import { AppHeader } from '@/designSystem/ui/AppHeader'
 import { useNavigate, useSearchParams } from '@remix-run/react'
-import { Alert, Button, Flex, Form, Input, Typography } from 'antd'
+import { Alert, Button, Flex, Form, Input, Typography, App as AntdApp } from 'antd'
 import { useEffect, useState } from 'react'
 import { AuthenticationClient } from '~/core/authentication/client'
 import { Configuration } from '@/core/configuration'
 
 export default function LoginPage() {
+  return (
+    <AntdApp>
+      <LoginPageContent />
+    </AntdApp>
+  )
+}
+
+function LoginPageContent() {
   const router = useNavigate()
   const [searchParams] = useSearchParams()
 
@@ -35,17 +43,29 @@ export default function LoginPage() {
 
   const handleSubmit = async (values: any) => {
     setLoading(true)
+    
+    // Mask email for logging
+    const maskedEmail = values.email.replace(/(?<=.{3}).(?=.*@)/g, '*')
+    console.log(`Login attempt for email: ${maskedEmail}`)
 
     try {
       const response = await login({ email: values.email, password: values.password })
-      console.log('Login response:', response)
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Login error:', {
+        status: error.status,
+        type: error.name,
+        message: error.message,
+        response: error.response?.data
+      });
       
       if (Configuration.isDevelopment()) {
         setErrorMessage(`Error: ${error.message}\n\nStack: ${error.stack}`);
       } else {
-        if (error.message.includes('credentials')) {
+        if (error.status === 404) {
+          setErrorMessage('Account not found. Please check your email or register.');
+        } else if (error.status === 500) {
+          setErrorMessage('Server error. Please try again later.');
+        } else if (error.message.includes('credentials')) {
           setErrorMessage('Invalid credentials. Please check your email and password.');
         } else if (error.message.includes('network') || error.message.includes('connection')) {
           setErrorMessage('Network error. Please check your internet connection.');
