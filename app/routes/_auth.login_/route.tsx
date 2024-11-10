@@ -37,12 +37,6 @@ export default function LoginPage() {
     default: 'Unable to sign in.',
   }[errorKey ?? 'default']
 
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      form.setFieldValue('email', 'test@test.com')
-      form.setFieldValue('password', 'password')
-    }
-  }, [])
 
   const handleSubmit = async (values: any) => {
     setLoading(true)
@@ -134,3 +128,9 @@ export default function LoginPage() {
     </Flex>
   )
 }
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      form.setFieldValue('email', 'test@test.com')
+      form.setFieldValue('password', 'password')
+    }
+  }, [])
