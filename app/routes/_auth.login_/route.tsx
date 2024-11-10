@@ -1,9 +1,10 @@
 import { Api } from '@/core/trpc'
 import { AppHeader } from '@/designSystem/ui/AppHeader'
 import { useNavigate, useSearchParams } from '@remix-run/react'
-import { Button, Flex, Form, Input, Typography } from 'antd'
+import { Alert, Button, Flex, Form, Input, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { AuthenticationClient } from '~/core/authentication/client'
+import { Configuration } from '@/core/configuration'
 
 export default function LoginPage() {
   const router = useNavigate()
@@ -20,38 +21,39 @@ export default function LoginPage() {
     },
   })
 
-  const errorKey = searchParams.get('error')
-
-  const errorMessage = {
-    Signin: 'Try signing in with a different account.',
-    OAuthSignin: 'Try signing in with a different account.',
-    OAuthCallback: 'Try signing in with a different account.',
-    OAuthCreateAccount: 'Try signing in with a different account.',
-    EmailCreateAccount: 'Try signing in with a different account.',
-    Callback: 'Try signing in with a different account.',
-    OAuthAccountNotLinked:
-      'To confirm your identity, sign in with the same account you used originally.',
-    EmailSignin: 'Check your email address.',
-    CredentialsSignin:
-      'Sign in failed. Check the details you provided are correct.',
-    default: 'Unable to sign in.',
-  }[errorKey ?? 'default']
+  const [errorMessage, setErrorMessage] = useState<string>()
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      form.setFieldValue('email', 'test@test.com')
-      form.setFieldValue('password', 'password')
+    if (Configuration.isDevelopment()) {
+      form.setFieldsValue({
+        email: 'test@test.com',
+        password: 'password123'
+      })
     }
-  }, [])
+  }, [form])
+
 
   const handleSubmit = async (values: any) => {
     setLoading(true)
 
     try {
-      await login({ email: values.email, password: values.password })
+      const response = await login({ email: values.email, password: values.password })
+      console.log('Login response:', response)
     } catch (error) {
-      console.error(`Could not login: ${error.message}`, { variant: 'error' })
-
+      console.error('Login error:', error);
+      
+      if (Configuration.isDevelopment()) {
+        setErrorMessage(`Error: ${error.message}\n\nStack: ${error.stack}`);
+      } else {
+        if (error.message.includes('credentials')) {
+          setErrorMessage('Invalid credentials. Please check your email and password.');
+        } else if (error.message.includes('network') || error.message.includes('connection')) {
+          setErrorMessage('Network error. Please check your internet connection.');
+        } else {
+          setErrorMessage('An unexpected error occurred. Please try again.');
+        }
+      }
+    } finally {
       setLoading(false)
     }
   }
@@ -69,10 +71,24 @@ export default function LoginPage() {
       >
         <AppHeader description="Welcome!" />
 
-        {errorKey && (
-          <Typography.Text type="danger">{errorMessage}</Typography.Text>
+        {Configuration.isDevelopment() && (
+          <Alert
+            message="Development Mode"
+            description={
+              <div>
+                Test credentials:<br/>
+                Email: test@test.com<br/>
+                Password: password123
+              </div>
+            }
+            type="warning"
+            showIcon
+          />
         )}
 
+        {errorMessage && (
+          <Typography.Text type="danger" style={{whiteSpace: 'pre-line'}}>{errorMessage}</Typography.Text>
+        )}
         <Form
           form={form}
           onFinish={handleSubmit}
