@@ -113,9 +113,6 @@ importers:
       posthog-js:
         specifier: ^1.167.0
         version: 1.167.0
-      prisma:
-        specifier: ^5.19.1
-        version: 5.20.0
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -201,6 +198,9 @@ importers:
       eslint-plugin-react-hooks:
         specifier: ^4.6.0
         version: 4.6.2(eslint@8.57.1)
+      prisma:
+        specifier: ^5.20.0
+        version: 5.20.0
       sass-embedded:
         specifier: ^1.79.3
         version: 1.79.3

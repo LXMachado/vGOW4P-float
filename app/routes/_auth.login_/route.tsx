@@ -11,6 +11,7 @@ export default function LoginPage() {
 
   const [form] = Form.useForm()
   const [isLoading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string>()
 
   const { mutateAsync: login } = Api.authentication.login.useMutation({
     onSuccess: data => {
@@ -22,7 +23,7 @@ export default function LoginPage() {
 
   const errorKey = searchParams.get('error')
 
-  const errorMessage = {
+  const errorMessages = {
     Signin: 'Try signing in with a different account.',
     OAuthSignin: 'Try signing in with a different account.',
     OAuthCallback: 'Try signing in with a different account.',
@@ -51,7 +52,7 @@ export default function LoginPage() {
       await login({ email: values.email, password: values.password })
     } catch (error) {
       console.error(`Could not login: ${error.message}`, { variant: 'error' })
-
+      setErrorMessage(error.message)
       setLoading(false)
     }
   }
@@ -69,9 +70,8 @@ export default function LoginPage() {
       >
         <AppHeader description="Welcome!" />
 
-        {errorKey && (
-          <Typography.Text type="danger">{errorMessage}</Typography.Text>
-        )}
+        {errorKey && <Typography.Text type="danger">{errorMessages[errorKey ?? 'default']}</Typography.Text>}
+        {errorMessage && <Typography.Text type="danger">{errorMessage}</Typography.Text>}
 
         <Form
           form={form}

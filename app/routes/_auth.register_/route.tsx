@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const [form] = Form.useForm()
 
   const [isLoading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string>()
 
   const { mutateAsync: register } = Api.authentication.register.useMutation()
 
@@ -38,14 +39,20 @@ export default function RegisterPage() {
     try {
       const tokenInvitation = searchParams.get('tokenInvitation') ?? undefined
 
-      await register({ ...values, tokenInvitation })
-
-      login(values)
-    } catch (error) {
-      console.error(`Could not signup: ${error.message}`, {
-        variant: 'error',
+      await register({ 
+        email: values.email,
+        name: values.name,
+        password: values.password,
+        tokenInvitation 
       })
 
+      await login({ 
+        email: values.email, 
+        password: values.password 
+      })
+    } catch (error) {
+      console.error('Registration error:', error)
+      setErrorMessage(error?.message || 'Registration failed. Please try again.')
       setLoading(false)
     }
   }
@@ -62,6 +69,10 @@ export default function RegisterPage() {
         gap="middle"
       >
         <AppHeader description="Welcome!" />
+
+        {errorMessage && (
+          <Typography.Text type="danger">{errorMessage}</Typography.Text>
+        )}
 
         <Form
           form={form}
