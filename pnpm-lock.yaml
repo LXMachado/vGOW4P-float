@@ -18,7 +18,7 @@ importers:
         specifier: ^3.657.0
         version: 3.657.0
       '@prisma/client':
-        specifier: ^5.19.1
+        specifier: ^5.20.0
         version: 5.20.0(prisma@5.20.0)
       '@remix-run/express':
         specifier: ^2.13.1
