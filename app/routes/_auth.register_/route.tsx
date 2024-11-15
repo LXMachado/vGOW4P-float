@@ -4,6 +4,7 @@ import { AppHeader } from '@/designSystem/ui/AppHeader'
 import { User } from '@prisma/client'
 import { useNavigate, useSearchParams } from '@remix-run/react'
 import { Button, Flex, Form, Input, Typography } from 'antd'
+const { Title, Text, Paragraph } = Typography
 import { useEffect, useState } from 'react'
 
 export default function RegisterPage() {
@@ -70,8 +71,13 @@ export default function RegisterPage() {
       >
         <AppHeader description="Welcome!" />
 
+        <Title level={2} className="text-center mb-6">Create Your Account</Title>
+        <Paragraph className="text-center mb-8">
+          Join thousands of users discovering inner peace with Float
+        </Paragraph>
+
         {errorMessage && (
-          <Typography.Text type="danger">{errorMessage}</Typography.Text>
+          <Text type="danger">{errorMessage}</Text>
         )}
 
         <Form
@@ -109,22 +115,29 @@ export default function RegisterPage() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" loading={isLoading} block>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              loading={isLoading} 
+              block
+              size="large"
+              className="min-w-[200px]"
+            >
               Register
             </Button>
           </Form.Item>
         </Form>
 
-        <Button
-          ghost
-          style={{ border: 'none' }}
-          onClick={() => router('/login')}
-        >
-          <Flex gap={'small'} justify="center">
-            <Typography.Text type="secondary">Have an account?</Typography.Text>{' '}
-            <Typography.Text>Sign in</Typography.Text>
-          </Flex>
-        </Button>
+        <Flex gap="small" justify="center">
+          <Text type="secondary">Have an account?</Text>
+          <Button 
+            type="link" 
+            onClick={() => router('/login')}
+            className="p-0"
+          >
+            Sign in
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   )

@@ -2,6 +2,7 @@ import { Api } from '@/core/trpc'
 import { AppHeader } from '@/designSystem/ui/AppHeader'
 import { useNavigate, useSearchParams } from '@remix-run/react'
 import { Button, Flex, Form, Input, Typography } from 'antd'
+const { Title, Text, Paragraph } = Typography
 import { useEffect, useState } from 'react'
 import { AuthenticationClient } from '~/core/authentication/client'
 
@@ -68,10 +69,12 @@ export default function LoginPage() {
         }}
         gap="middle"
       >
-        <AppHeader description="Welcome!" />
-
-        {errorKey && <Typography.Text type="danger">{errorMessages[errorKey ?? 'default']}</Typography.Text>}
-        {errorMessage && <Typography.Text type="danger">{errorMessage}</Typography.Text>}
+        <AppHeader description="Welcome back!" />
+        
+        <Title level={2} className="text-center mb-6">Sign in to your account</Title>
+        
+        {errorKey && <Text type="danger">{errorMessages[errorKey ?? 'default']}</Text>}
+        {errorMessage && <Text type="danger">{errorMessage}</Text>}
 
         <Form
           form={form}
@@ -112,7 +115,14 @@ export default function LoginPage() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" block loading={isLoading}>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              block 
+              loading={isLoading}
+              size="large"
+              className="mt-4"
+            >
               Sign in
             </Button>
           </Form.Item>
@@ -120,16 +130,16 @@ export default function LoginPage() {
 
         <AuthenticationClient.SocialButtons />
 
-        <Button
-          ghost
-          style={{ border: 'none' }}
-          onClick={() => router('/register')}
-        >
-          <Flex gap={'small'} justify="center">
-            <Typography.Text type="secondary">No account?</Typography.Text>{' '}
-            <Typography.Text>Sign up</Typography.Text>
-          </Flex>
-        </Button>
+        <Flex justify="center" gap="small">
+          <Text type="secondary">No account?</Text>
+          <Button 
+            type="link" 
+            onClick={() => router('/register')}
+            className="p-0"
+          >
+            Sign up
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   )
