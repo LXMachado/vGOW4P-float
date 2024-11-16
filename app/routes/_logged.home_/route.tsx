@@ -25,13 +25,13 @@ export default function HomePage() {
   // Fetch featured tracks
   const { data: featuredTracks } = Api.track.findMany.useQuery({
     take: 4,
-    include: { category: true },
+    include: { category: true, duration: true },
   })
 
   // Fetch user's meditation sessions
   const { data: recentSessions } = Api.meditationSession.findMany.useQuery({
-    where: { userId: user?.id },
-    include: { track: true },
+    where: { userId: user?.id ?? '' },
+    include: { track: true, createdAt: true, rating: true },
     orderBy: { createdAt: 'desc' },
     take: 5,
   })
@@ -39,6 +39,7 @@ export default function HomePage() {
   // Fetch user's reminders
   const { data: reminders } = Api.reminder.findMany.useQuery({
     where: { userId: user?.id },
+    include: { time: true, frequency: true },
   })
 
   // Fetch user's favorites
@@ -126,7 +127,7 @@ export default function HomePage() {
                       session.createdAt,
                     ).format('MMM D, YYYY')}`}
                   />
-                  <Rate disabled defaultValue={session.rating || 0} />
+                  <Rate disabled value={session.rating || 0} />
                 </List.Item>
               )}
             />
@@ -148,7 +149,7 @@ export default function HomePage() {
                     description={`Frequency: ${reminder.frequency}`}
                   />
                   <Switch
-                    checked={reminder.isEnabled}
+                    defaultChecked={reminder.isEnabled}
                     onChange={checked =>
                       handleReminderToggle(reminder.id, checked)
                     }
