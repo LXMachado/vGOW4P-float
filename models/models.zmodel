@@ -1,3 +1,4 @@
+
 enum UserStatus {
     INVITED
     VERIFIED

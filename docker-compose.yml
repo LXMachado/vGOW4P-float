@@ -1,15 +1,19 @@
-ersion: '3.8'
+version: '3.8'
 services:
   database:
     container_name: postgresql
     image: postgres
     restart: always
+    platform: linux/arm64/v8
+    command: sh -c "npx prisma generate && docker-entrypoint.sh postgres"
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: api
     ports:
       - '5442:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
   pgadmin:
     container_name: pgadmin4
     image: dpage/pgadmin4
@@ -33,3 +37,6 @@ services:
       MP_DATA_FILE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+volumes:
+  postgres_data:
