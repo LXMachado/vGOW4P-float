@@ -11,4 +11,4 @@ vite.config.ts.timestamp*
 
 /build
 /tmp
-
+docker-compose.yml
